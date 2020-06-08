@@ -40,6 +40,7 @@ import (
 	"github.com/harmony-one/harmony/shard"
 	"github.com/harmony-one/harmony/webhooks"
 	"github.com/pkg/errors"
+	"github.com/harmony-one/harmony/docs"
 )
 
 // Version string variables
@@ -68,6 +69,7 @@ var (
 	logMaxSize  = flag.Int("log_max_size", 100, "the max size in megabytes of the log file before it gets rotated")
 	freshDB     = flag.Bool("fresh_db", false, "true means the existing disk based db will be removed")
 	pprof       = flag.String("pprof", "", "what address and port the pprof profiling server should listen on")
+	swagger     = flag.String("swagger", "", "what address and port the swagger server should listen on")
 	versionFlag = flag.Bool("version", false, "Output version info")
 	dnsZone     = flag.String("dns_zone", "", "if given and not empty, use peers from the zone (default: use libp2p peer discovery instead)")
 	dnsFlag     = flag.Bool("dns", true, "[deprecated] equivalent to -dns_zone t.hmny.io")
@@ -125,7 +127,10 @@ func initSetup() {
 	if addr := *pprof; addr != "" {
 		go func() { http.ListenAndServe(addr, nil) }()
 	}
-
+	// Setup swagger
+	if addr := *swagger; addr != "" {
+		go func() { docs.DocServer(addr) }()
+	}
 	// maybe request passphrase for bls key.
 	if *cmkEncryptedBLSKey == "" {
 		passphraseForBLS()
@@ -570,6 +575,7 @@ func setupViperConfig() {
 	viperconfig.ResetConfInt(logMaxSize, envViper, configFileViper, "", "log_max_size")
 	viperconfig.ResetConfBool(freshDB, envViper, configFileViper, "", "fresh_db")
 	viperconfig.ResetConfString(pprof, envViper, configFileViper, "", "pprof")
+	viperconfig.ResetConfString(swagger, envViper, configFileViper, "", "swagger")
 	viperconfig.ResetConfBool(versionFlag, envViper, configFileViper, "", "version")
 	viperconfig.ResetConfString(dnsZone, envViper, configFileViper, "", "dns_zone")
 	viperconfig.ResetConfBool(dnsFlag, envViper, configFileViper, "", "dns")

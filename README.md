@@ -149,9 +149,14 @@ git clone git@github.com:harmony-one/mcl.git
 git clone git@github.com:harmony-one/bls.git
 git clone git@github.com:harmony-one/harmony.git
 
+For AWS linux also need
+```
+sudo yum install  gmp-devel openssl-devel
+sudo yum install gcc-c++ glibc-static openssl-static crypto-static gmp-static
+
 cd harmony
 
-make
+make linux_static
 
 ```
 

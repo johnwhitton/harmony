@@ -198,6 +198,7 @@ options:
    -A             enable archival node mode (default: off)
    -B blacklist   specify file containing blacklisted accounts as a newline delimited file (default: ./.hmy/blacklist.txt)
    -r address     start a pprof profiling server listening on the specified address
+   -w address     start a swagger api server listening on the specified address
    -I             use statically linked Harmony binary (default: true)
    -R tracefile   enable p2p trace using tracefile (default: off)
    -l             limit broadcasting of invalid transactions (default: off)
@@ -269,6 +270,7 @@ blsfolder=./.hmy/blskeys
 archival=false
 blacklist=./.hmy/blacklist.txt
 pprof=""
+swagger=""
 static=true
 verify=false
 minpeers=6
@@ -280,7 +282,7 @@ ${TRACEFILE=}
 
 unset OPTIND OPTARG opt
 OPTIND=1
-while getopts :1chk:sSp:dDN:T:i:U:PvVyzn:MAIB:r:Y:f:R:m:L:l opt
+while getopts :1chk:sSp:dDN:T:i:U:PvVyzn:MAIB:r:w:Y:f:R:m:L:l opt
 do
    case "${opt}" in
    '?') usage "unrecognized option -${OPTARG}";;
@@ -308,6 +310,7 @@ do
    r) pprof="${OPTARG}";;
    v) msg "version: $version"
       exit 0 ;;
+   w) swagger="${OPTARG}";;
    V) LD_LIBRARY_PATH=. ./harmony -version
       exit 0 ;;
    Y) verify=true;;
@@ -861,6 +864,11 @@ do
    if [ ! -z "${pprof}" ]; then
       args+=(
       -pprof "${pprof}"
+      )
+   fi
+   if [ ! -z "${swagger}" ]; then
+      args+=(
+      -swagger "${swagger}"
       )
    fi
 # backward compatible with older harmony node software

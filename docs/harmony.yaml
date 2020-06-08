@@ -1,0 +1,652 @@
+basePath: /
+consumes:
+- application/json
+definitions:
+  APREntry:
+    properties:
+      Epoch:
+        $ref: '#/definitions/Int'
+      Value:
+        $ref: '#/definitions/Dec'
+    title: APREntry ..
+    type: object
+    x-go-package: github.com/harmony-one/harmony/staking/types
+  AccumulatedOverLifetime:
+    properties:
+      apr:
+        $ref: '#/definitions/Dec'
+      blocks:
+        $ref: '#/definitions/counters'
+      epoch-apr:
+        items:
+          $ref: '#/definitions/APREntry'
+        type: array
+        x-go-name: EpochAPRs
+      reward-accumulated:
+        $ref: '#/definitions/Int'
+    title: AccumulatedOverLifetime ..
+    type: object
+    x-go-package: github.com/harmony-one/harmony/staking/types
+  Address:
+    items:
+      format: uint8
+      type: integer
+    title: Address represents the 20 byte address of an Ethereum account.
+    type: array
+    x-go-package: github.com/ethereum/go-ethereum/common
+  BLSPublicKey:
+    description: BLSPublicKey defines the bls public key
+    items:
+      format: uint8
+      type: integer
+    type: array
+    x-go-package: github.com/harmony-one/harmony/shard
+  Computed:
+    description: |-
+      Computed represents current epoch
+      availability measures, mostly for RPC
+    properties:
+      current-epoch-signed:
+        $ref: '#/definitions/Int'
+      current-epoch-signing-percentage:
+        $ref: '#/definitions/Dec'
+      current-epoch-to-sign:
+        $ref: '#/definitions/Int'
+    type: object
+    x-go-package: github.com/harmony-one/harmony/staking/types
+  CurrentEpochPerformance:
+    description: |-
+      CurrentEpochPerformance represents validator performance in the context of
+      whatever current epoch is
+    properties:
+      current-epoch-signing-percent:
+        $ref: '#/definitions/Computed'
+    type: object
+    x-go-package: github.com/harmony-one/harmony/staking/types
+  Dec:
+    description: |-
+      Dec represent a decimal. NOTE: never use new(Dec) or else we will panic unmarshalling into the
+      nil embedded big.Int
+    type: object
+    x-go-package: github.com/harmony-one/harmony/numeric
+  Delegation:
+    description: |-
+      Delegation represents the bond with tokens held by an account. It is
+      owned by one delegator, and is associated with the voting power of one
+      validator.
+    properties:
+      Amount:
+        $ref: '#/definitions/Int'
+      DelegatorAddress:
+        $ref: '#/definitions/Address'
+      Reward:
+        $ref: '#/definitions/Int'
+      Undelegations:
+        $ref: '#/definitions/Undelegations'
+    type: object
+    x-go-package: github.com/harmony-one/harmony/staking/types
+  Delegations:
+    items:
+      $ref: '#/definitions/Delegation'
+    title: Delegations ..
+    type: array
+    x-go-package: github.com/harmony-one/harmony/staking/types
+  GetValidatorInformationRequest:
+    allOf:
+    - properties:
+        id:
+          example: "1"
+          type: object
+          x-go-name: ID
+        jsonrpc:
+          example: "2.0"
+          type: string
+          x-go-name: Version
+      type: object
+    - properties:
+        params:
+          example:
+          - one170xqsfzm4xdmuyax54t5pvtp5l5yt66u50ctrp
+          items:
+            type: string
+          type: array
+          x-go-name: Params
+      type: object
+    - properties:
+        Method:
+          example: hmy_getValidatorInformation
+          type: string
+      type: object
+    description: Get Validator Information request
+    x-go-package: github.com/harmony-one/harmony/internal/hmyapi/apiv1
+  GetValidatorInformationResponse:
+    allOf:
+    - properties:
+        id:
+          example: "1"
+          type: object
+          x-go-name: ID
+        jsonrpc:
+          example: "2.0"
+          type: string
+          x-go-name: Version
+      type: object
+    - properties:
+        result:
+          $ref: '#/definitions/ValidatorRPCEnhanced'
+      type: object
+    x-go-package: github.com/harmony-one/harmony/internal/hmyapi/apiv1
+  Host:
+    properties:
+      GetID:
+        $ref: '#/definitions/ID'
+      GetP2PHost:
+        $ref: '#/definitions/Host'
+      GetPeerCount:
+        format: int64
+        type: integer
+      GetSelfPeer:
+        $ref: '#/definitions/Peer'
+      PubSub:
+        $ref: '#/definitions/PubSub'
+    title: Host is the client + server in p2p network.
+    type: object
+    x-go-package: github.com/harmony-one/harmony/p2p
+  ID:
+    description: |-
+      Peer IDs are derived by hashing a peer's public key and encoding the
+      hash output as a multihash. See IDFromPublicKey for details.
+    title: ID is a libp2p peer identity.
+    type: string
+    x-go-package: github.com/libp2p/go-libp2p-core/peer
+  Int:
+    description: |-
+      Operations always take pointer arguments (*Int) rather
+      than Int values, and each unique Int value requires
+      its own unique *Int pointer. To "copy" an Int value,
+      an existing (or newly allocated) Int must be set to
+      a new value using the Int.Set method; shallow copies
+      of Ints are not supported and may lead to errors.
+    title: |-
+      An Int represents a signed multi-precision integer.
+      The zero value for an Int represents the value 0.
+    type: object
+    x-go-package: math/big
+  Multiaddr:
+    allOf:
+    - type: object
+    - type: object
+    - type: object
+    - type: object
+    - type: object
+    - type: object
+    - allOf:
+      - type: object
+      - type: object
+      - type: object
+      - type: object
+      - type: object
+      - type: object
+      description: |-
+        Multiaddrs have both a binary and string representation.
+
+        import ma "github.com/multiformats/go-multiaddr"
+
+        addr, err := ma.NewMultiaddr("/ip4/1.2.3.4/tcp/80")
+        err non-nil when parsing failed.
+      properties:
+        Bytes:
+          description: |-
+            Bytes returns the []byte representation of this Multiaddr
+
+            This function may expose immutable, internal state. Do not modify.
+          items:
+            format: uint8
+            type: integer
+          type: array
+        Protocols:
+          description: |-
+            Protocols returns the list of Protocols this Multiaddr includes
+            will panic if protocol code incorrect (and bytes accessed incorrectly)
+          items:
+            $ref: '#/definitions/Protocol'
+          type: array
+        String:
+          description: |-
+            String returns the string representation of this Multiaddr
+            (may panic if internal state is corrupted)
+          type: string
+      title: |-
+        Multiaddr is a cross-protocol, cross-platform format for representing
+        internet addresses. It emphasizes explicitness and self-description.
+        Learn more here: https://github.com/multiformats/multiaddr
+      type: object
+    description: |-
+      Multiaddrs have both a binary and string representation.
+
+      import ma "github.com/multiformats/go-multiaddr"
+
+      addr, err := ma.NewMultiaddr("/ip4/1.2.3.4/tcp/80")
+      err non-nil when parsing failed.
+    properties:
+      Bytes:
+        description: |-
+          Bytes returns the []byte representation of this Multiaddr
+
+          This function may expose immutable, internal state. Do not modify.
+        items:
+          format: uint8
+          type: integer
+        type: array
+      Protocols:
+        description: |-
+          Protocols returns the list of Protocols this Multiaddr includes
+          will panic if protocol code incorrect (and bytes accessed incorrectly)
+        items:
+          $ref: '#/definitions/Protocol'
+        type: array
+      String:
+        description: |-
+          String returns the string representation of this Multiaddr
+          (may panic if internal state is corrupted)
+        type: string
+    title: |-
+      Multiaddr is a cross-protocol, cross-platform format for representing
+      internet addresses. It emphasizes explicitness and self-description.
+      Learn more here: https://github.com/multiformats/multiaddr
+    type: object
+    x-go-package: github.com/multiformats/go-multiaddr
+  NetVersionRequest:
+    allOf:
+    - properties:
+        id:
+          example: "1"
+          type: object
+          x-go-name: ID
+        jsonrpc:
+          example: "2.0"
+          type: string
+          x-go-name: Version
+      type: object
+    - properties:
+        method:
+          example: net_version
+          type: string
+          x-go-name: Method
+      type: object
+    description: Network Version request
+    x-go-package: github.com/harmony-one/harmony/internal/hmyapi/apiv1
+  NetVersionResponse:
+    allOf:
+    - properties:
+        id:
+          example: "1"
+          type: object
+          x-go-name: ID
+        jsonrpc:
+          example: "2.0"
+          type: string
+          x-go-name: Version
+      type: object
+    - properties:
+        result:
+          example: "1"
+          type: string
+          x-go-name: Result
+      type: object
+    x-go-package: github.com/harmony-one/harmony/internal/hmyapi/apiv1
+  Peer:
+    description: Peer is the object for a p2p peer (node)
+    properties:
+      Addrs:
+        items:
+          $ref: '#/definitions/Multiaddr'
+        type: array
+      ConsensusPubKey:
+        $ref: '#/definitions/PublicKey'
+      IP:
+        type: string
+      PeerID:
+        $ref: '#/definitions/ID'
+      Port:
+        type: string
+    type: object
+    x-go-package: github.com/harmony-one/harmony/p2p
+  Protocol:
+    properties:
+      Code:
+        description: Code is the protocol's multicodec (a normal, non-varint number).
+        format: int64
+        type: integer
+      Name:
+        description: |-
+          Name is the string representation of the protocol code. E.g., ip4,
+          ip6, tcp, udp, etc.
+        type: string
+      Path:
+        description: |-
+          Path indicates a path protocol (e.g., unix). When parsing multiaddr
+          strings, path protocols consume the remainder of the address instead
+          of stopping at the next forward slash.
+
+          Size must be LengthPrefixedVarSize.
+        type: boolean
+      Size:
+        description: |-
+          Size is the size of the argument to this protocol.
+
+          Size == 0 means this protocol takes no argument.
+          Size >  0 means this protocol takes a constant sized argument.
+          Size <  0 means this protocol takes a variable length, varint
+          prefixed argument.
+        format: int64
+        type: integer
+      Transcoder:
+        $ref: '#/definitions/Transcoder'
+      VCode:
+        description: VCode is a precomputed varint encoded version of Code.
+        items:
+          format: uint8
+          type: integer
+        type: array
+    title: Protocol is a Multiaddr protocol description structure.
+    type: object
+    x-go-package: github.com/multiformats/go-multiaddr
+  PubSub:
+    title: PubSub is the implementation of the pubsub system.
+    type: object
+    x-go-package: github.com/libp2p/go-libp2p-pubsub
+  PublicKey:
+    description: PublicKey --
+    type: object
+    x-go-package: github.com/harmony-one/bls/ffi/go/bls
+  Transcoder:
+    type: object
+    x-go-package: github.com/multiformats/go-multiaddr
+  Undelegation:
+    description: Undelegation represents one undelegation entry
+    properties:
+      amount:
+        $ref: '#/definitions/Int'
+      epoch:
+        $ref: '#/definitions/Int'
+    type: object
+    x-go-package: github.com/harmony-one/harmony/staking/types
+  Undelegations:
+    items:
+      $ref: '#/definitions/Undelegation'
+    title: Undelegations ..
+    type: array
+    x-go-package: github.com/harmony-one/harmony/staking/types
+  ValidatorRPCEnhanced:
+    description: ValidatorRPCEnhanced contains extra information for RPC consumer
+    properties:
+      active-status:
+        type: string
+        x-go-name: ActiveStatus
+      booted-status:
+        type: string
+        x-go-name: BootedStatus
+      current-epoch-performance:
+        $ref: '#/definitions/CurrentEpochPerformance'
+      currently-in-committee:
+        type: boolean
+        x-go-name: CurrentlyInCommittee
+      epos-status:
+        type: string
+        x-go-name: EPoSStatus
+      epos-winning-stake:
+        $ref: '#/definitions/Dec'
+      lifetime:
+        $ref: '#/definitions/AccumulatedOverLifetime'
+      metrics:
+        $ref: '#/definitions/ValidatorStats'
+      total-delegation:
+        $ref: '#/definitions/Int'
+      validator:
+        $ref: '#/definitions/ValidatorWrapper'
+    type: object
+    x-go-package: github.com/harmony-one/harmony/staking/types
+  ValidatorStats:
+    description: ValidatorStats to record validator's performance and history records
+    properties:
+      by-bls-key:
+        description: MetricsPerShard ..
+        items:
+          $ref: '#/definitions/VoteWithCurrentEpochEarning'
+        type: array
+        x-go-name: MetricsPerShard
+    type: object
+    x-go-package: github.com/harmony-one/harmony/staking/types
+  ValidatorWrapper:
+    description: its delegation information
+    properties:
+      Delegations:
+        $ref: '#/definitions/Delegations'
+      address:
+        $ref: '#/definitions/Address'
+      bls-public-keys:
+        description: The BLS public key of the validator for consensus
+        items:
+          $ref: '#/definitions/BLSPublicKey'
+        type: array
+        x-go-name: SlotPubKeys
+      creation-height:
+        $ref: '#/definitions/Int'
+      details:
+        type: string
+        x-go-name: Details
+      identity:
+        type: string
+        x-go-name: Identity
+      last-epoch-in-committee:
+        $ref: '#/definitions/Int'
+      max-change-rate:
+        $ref: '#/definitions/Dec'
+      max-rate:
+        $ref: '#/definitions/Dec'
+      max-total-delegation:
+        $ref: '#/definitions/Int'
+      min-self-delegation:
+        $ref: '#/definitions/Int'
+      name:
+        type: string
+        x-go-name: Name
+      rate:
+        $ref: '#/definitions/Dec'
+      security-contact:
+        type: string
+        x-go-name: SecurityContact
+      update-height:
+        $ref: '#/definitions/Int'
+      website:
+        type: string
+        x-go-name: Website
+    title: ValidatorWrapper contains validator,
+    type: object
+    x-go-package: github.com/harmony-one/harmony/staking/types
+  VoteOnSubcomittee:
+    properties:
+      ShardID:
+        format: uint32
+        type: integer
+      bls-public-key:
+        $ref: '#/definitions/BLSPublicKey'
+      earning-account:
+        $ref: '#/definitions/Address'
+      effective-stake:
+        $ref: '#/definitions/Dec'
+      group-percent:
+        $ref: '#/definitions/Dec'
+      overall-percent:
+        $ref: '#/definitions/Dec'
+      raw-stake:
+        $ref: '#/definitions/Dec'
+    title: VoteOnSubcomittee ..
+    type: object
+    x-go-package: github.com/harmony-one/harmony/consensus/votepower
+  VoteWithCurrentEpochEarning:
+    properties:
+      earned-reward:
+        $ref: '#/definitions/Int'
+      key:
+        $ref: '#/definitions/VoteOnSubcomittee'
+    title: VoteWithCurrentEpochEarning ..
+    type: object
+    x-go-package: github.com/harmony-one/harmony/staking/types
+  counters:
+    properties:
+      signed:
+        $ref: '#/definitions/Int'
+      to-sign:
+        $ref: '#/definitions/Int'
+    type: object
+    x-go-package: github.com/harmony-one/harmony/staking/types
+host: 54.201.207.240:9500
+info:
+  contact:
+    email: john@johnwhitton.come
+    name: John Whitton
+    url: https://johnwhitton.dev
+  description: |-
+    the purpose of this application is to provide all APIs needed
+    to interact with harmony
+  license:
+    name: MIT
+    url: http://opensource.org/licenses/MIT
+  title: harmony API.
+  version: 0.0.1
+paths:
+  /GetValidatorInformation:
+    post:
+      description: |2-
+
+        GetValidatorInformation returns all information for a Validator
+        Get staking validator information.
+
+        #### Parameters
+
+        1. `String` - validator bech32 address.
+
+        #### Returns
+
+        + `jsonrpc` - `String` - json rpc version
+        + `id` - `Number` - id
+        + `result`
+        + * `validator`
+        + * * `bls-public-keys` - `[]String` - array of validator bls public keys
+        + * * `last-epoch-in-committee` - `Number` - big.Int last epoch in committee
+        + * * `min-self-delegation` - `Number` - big.Int min self delegation
+        + * * `max-total-delegation` - `Number` - big.Int max total delegated to this validator
+        + * * `rate` - `Float` - validator current commission rate
+        + * * `max-rate` - `Float` - max validator commission rate
+        + * * `max-change-rate` - `Float` - max validator commission rate change
+        + * * `update-height` - `Number` - block height of last validator update
+        + * * `name` - `String` - validator name
+        + * * `identity` - `String` - validator text kyc identity
+        + * * `website` - `String` - validator website
+        + * * `security-contact` - `String` - validator security contact
+        + * * `details` - `String` - additional info
+        + * * `creation-height` - `Number` - big.Int block height when validator was created
+        + * * `address` - `String` - ECSDA validator address
+        + * * `Delegations:` - array of validator delegations
+        + * * * `delegator-address`
+        + * * * `amount` - `Number` - delegated amount
+        + * * * `reward` - `Number` - unclaimed reward
+        + * * * `undelegations` - array of active validator undelegations
+        + * * * * `amount` - `Number(big.Int)` - amount returned to delegator
+        + * * * * `epoch` - `Number(big.Int)` - epoch of undelegation request
+        + * `current-epoch-performance` -
+        + *  * `current-epoch-signing-percent`
+        + *  * * `current-epoch-signed`
+        + *  * * `current-epoch-to-sign`
+        + *  * * `num-beacon-blocks-until-next-epoch`
+        + *  * * `current-epoch-signing-percentage`
+        + * `metrics`
+        + * * `by-bls-key`
+        + * * * `bls-public-key` - `[]String` - validator bls public keys
+        + * * * `group-percent` -
+        + * * * `effective-stake` - `Number` - effective stake of the the slot
+        + * * * `earning-account` -
+        + * * * `overall-percent`
+        + * * * `shard-id`
+        + * * `earned-reward`
+        + * `total-delegation` - `Number` - validator total delegation
+        + * `currently-in-committee` - `bool` -
+        + * `epos-status`
+        + * `epos-winning-stake`
+        + * `booted-status` - have you been booted (banned) e.g. for double signing
+        + * `lifetime`
+        + * * `reward-accumulated`
+        + * * `blocks`
+        + * * * `to-sign`
+        + * * * `signed`
+        + * * `apr`
+      operationId: GetValidatorInformation
+      parameters:
+      - description: GetValidatorInformation Request Parameters
+        in: body
+        name: GetValidatorInformaionRequest
+        required: true
+        schema:
+          $ref: '#/definitions/GetValidatorInformationRequest'
+        x-go-name: GetValidatorInformationRequest
+      responses:
+        "200":
+          $ref: '#/responses/GetValidatorInformationResponseModel'
+      summary: Returns the Validator Information
+      tags:
+      - Staking
+  /NetVersion:
+    post:
+      description: NetVersion returns the network version, i.e. network ID identifying
+        which network we are using
+      operationId: NetVersion
+      parameters:
+      - description: NetVersion Request Parameters
+        in: body
+        name: NetVersionRequest
+        required: true
+        schema:
+          $ref: '#/definitions/NetVersionRequest'
+      responses:
+        "200":
+          $ref: '#/responses/NetVersionResponseModel'
+      summary: Returns the network version
+      tags:
+      - Protocol
+produces:
+- application/json
+responses:
+  GetValidatorInformationResponseModel:
+    schema:
+      $ref: '#/definitions/GetValidatorInformationResponse'
+  NetVersionResponseModel:
+    schema:
+      $ref: '#/definitions/NetVersionResponse'
+  NetworkVersion:
+    description: |-
+      An NetworkVersion response  model.
+
+      This is used to offer network related RPC methods
+    headers:
+      net:
+        description: |-
+          The net peer to peer host
+
+          in: path
+          required: false
+      networkVersion:
+        description: |-
+          The network Version
+
+          in: path
+          required: false
+        format: uint64
+        type: integer
+    schema:
+      $ref: '#/definitions/Host'
+schemes:
+- http
+- https
+swagger: "2.0"

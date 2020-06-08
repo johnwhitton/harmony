@@ -74,9 +74,14 @@ test/.bnkey
 blspass.txt
 
 # local test db
-db-127.0.0.1-*
+db-*
 
 # dht storage
 .dht
 .dht-*
 .tern-port
+
+# swagger-ui
+swagger/swagger-ui/
+docs/swagger-ui/
+docs/swaggerui/
