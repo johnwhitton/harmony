@@ -597,24 +597,6 @@ paths:
       summary: Returns the Validator Information
       tags:
       - Staking
-  /NetVersion:
-    post:
-      description: NetVersion returns the network version, i.e. network ID identifying
-        which network we are using
-      operationId: NetVersion
-      parameters:
-      - description: NetVersion Request Parameters
-        in: body
-        name: NetVersionRequest
-        required: true
-        schema:
-          $ref: '#/definitions/NetVersionRequest'
-      responses:
-        "200":
-          $ref: '#/responses/NetVersionResponseModel'
-      summary: Returns the network version
-      tags:
-      - Protocol
 produces:
 - application/json
 responses:

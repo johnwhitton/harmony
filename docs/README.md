@@ -140,35 +140,68 @@ package docs
 
 ### Models
 
-Structures are documented as models and then referenced by endpoints for structures leveraged from other repositories such as ethereum we redefine the structures as models in [doc.go](./doc.go) for example
+Structures are documented as models and then referenced by endpoints. We currently define models in `openapi.go` in the respective packages. For examples please see. [apiv1/openapi.go](../internal/hmyapi/apiv1/openapi.go).
+
+An example model definition for GetValidatorInformation is as follows. Pplease see [apiv1/openapi.go](../internal/hmyapi/apiv1/openapi.go) for the complete codebase..
+
+* HmyRequestMin: Holds the data elements used in all requests
 ```
-// Holding place for ethereum or external definitions
-
-//swager:model ethjsonrpcMessage
-// A value of this type can a JSON-RPC request, notification, successful response or
-// error response. Which one it is depends on the fields.
-
-type ethjsonError struct {
-	Code    int         `json:"code"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data,omitempty"`
-}
-
-// EthjsonrpcMessage: definition of ethreum jsonrpcMessage
-// swagger:model EthjsonrpcMessage EthjsonrpcMessage
-type EthjsonrpcMessage struct {
-	//jsonrpc
-	//example: 2.0
-	Version string          `json:"jsonrpc,omitempty"`
-	//example: 1
-	ID      json.RawMessage `json:"id,omitempty"`
-	//example: net_version
-	Method  string          `json:"method,omitempty"`
-	Params  json.RawMessage `json:"params,omitempty"`
-	Error   *ethjsonError      `json:"error,omitempty"`
-	Result  json.RawMessage `json:"result,omitempty"`
+// HmyRequestMin: Minimum paramaters for Harmony Request used in every API call
+// swagger:model HmyRequestMin HmyRequestMin
+type HmyRequestMin struct {
+```
+* GetValidatorInformationParams: Holds the GetValidator specifix Parameters enabling examples
+```
+// GetValidatorInformationParams: Get Validator Information parameters
+// swagger:model GetValidatorInformationParams GetValidatorInformationParams
+type GetValidatorInformationParams struct {
+```
+* GetValidatorInformationRequest : Combines the parameters and method into a complete structure
+```
+// Get Validator Information request
+type GetValidatorInformationRequest struct {
+        // swagger:allOf
+        HmyRequestMin
+        // example: hmy_getValidatorInformation
+        Method  string
+        // swagger:allOf
+        GetValidatorInformationParams
 }
 ```
+* GetValidatorInformation: places the request into a model and links it to the GetValidatorInformation request endpoint
+```
+// swagger:parameters GetValidatorInformation
+type GetValidatorInformationRequestParams struct {
+        // GetValidatorInformation Request Parameters
+        //
+        // required: true
+        // in: body
+        GetValidatorInformationRequest GetValidatorInformationRequest `json:"GetValidatorInformaionRequest"`
+}
+``` 
+
+* GetValidatorInformationResponse: Combines the minimum data structure for the reqest with the GetValidatorInformation response schema
+```
+type GetValidatorInformationResponse struct {
+        //swagger:allOf
+        HmyRequestMin
+        // example: 1
+        Result  *staking.ValidatorRPCEnhanced     `json:"result,omitempty"`
+}
+```
+* GetValidatorInformationResponseModel: creates the data model for the response
+```
+// swagger:response GetValidatorInformationResponseModel
+type GetValidatorInformationResponseModel struct {
+        // GetValidatorInformation Response Model
+        //
+        // required: true
+        // in: body
+        GetValidatorInformationResponse GetValidatorInformationResponse `json:"GetValidatorInformationResponse"`
+}
+```
+
+
 
 ### Routes
 
